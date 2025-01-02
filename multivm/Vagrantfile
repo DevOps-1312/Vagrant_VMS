@@ -1,0 +1,67 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # Define a private network
+  config.vm.network "private_network", ip: "192.168.56.101" # Static IP
+
+  # Define web01
+  config.vm.define "web01" do |web01|
+    web01.vm.box = "ubuntu/focal64" # Ubuntu 20.04 base box
+    web01.vm.hostname = "web01"
+    web01.vm.network "private_network", ip: "192.168.56.41" # Private IP
+    web01.vm.provider "virtualbox" do |vb|
+      vb.name = "web01"
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
+
+  # Define web02
+  config.vm.define "web02" do |web02|
+    web02.vm.box = "ubuntu/focal64" # Ubuntu 20.04 base box
+    web02.vm.hostname = "web02"
+    web02.vm.network "private_network", ip: "192.168.56.42" # Private IP
+    web02.vm.provider "virtualbox" do |vb|
+      vb.name = "web02"
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
+
+  # Define web03
+  config.vm.define "web03" do |web03|
+    web03.vm.box = "ubuntu/focal64" # Ubuntu 20.04 base box
+    web03.vm.hostname = "web03"
+    web03.vm.network "private_network", ip: "192.168.56.43" # Private IP
+    web03.vm.provider "virtualbox" do |vb|
+      vb.name = "web03"
+      vb.memory = 512
+      vb.cpus = 1
+    end
+  end
+
+  # Define db01
+  config.vm.define "db01" do |db01|
+    db01.vm.box = "centos/7" # CentOS 7 base box
+    db01.vm.hostname = "db01"
+    db01.vm.network "private_network", ip: "192.168.56.44" # Private IP
+    db01.vm.provider "virtualbox" do |vb|
+      vb.name = "db01"
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+
+    # Provisioning for db01
+    db01.vm.provision "shell", inline: <<-SHELL
+      echo "Provisioning db01..."
+      yum update -y
+      yum install -y mariadb-server mariadb
+      systemctl start mariadb
+      systemctl enable mariadb
+      echo "MariaDB installed and started successfully on db01"
+    SHELL
+  end
+end
